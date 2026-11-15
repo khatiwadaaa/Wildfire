@@ -1,0 +1,25 @@
+[33mcommit eebceb98f8b9a2f253848de6b75aafd8568dbe4c[m[33m ([m[1;31morigin/trojanscout-frontend[m[33m)[m
+Author: Ankit Sapkota <ankitsapkota00@gmail.com>
+Date:   Sat Nov 14 22:01:17 2026 -0600
+
+    Add TrojanScout AI frontend
+
+ trojanscout-ai/.env.example            |    2 [32m+[m
+ trojanscout-ai/README.md               |  114 [32m++[m
+ trojanscout-ai/index.html              |    1 [32m+[m
+ trojanscout-ai/package-lock.json       | 3495 [32m++++++++++++++++++++++++++++++++[m
+ trojanscout-ai/package.json            |    9 [32m+[m
+ trojanscout-ai/postcss.config.js       |    1 [32m+[m
+ trojanscout-ai/src/App.tsx             |   25 [32m+[m
+ trojanscout-ai/src/data/mockPlayers.ts |   11 [32m+[m
+ trojanscout-ai/src/index.css           |    7 [32m+[m
+ trojanscout-ai/src/lib/api.ts          |   12 [32m+[m
+ trojanscout-ai/src/main.tsx            |    2 [32m+[m
+ trojanscout-ai/src/types/index.ts      |    8 [32m+[m
+ trojanscout-ai/src/vite-env.d.ts       |    1 [32m+[m
+ trojanscout-ai/tailwind.config.js      |    2 [32m+[m
+ trojanscout-ai/tsconfig.app.json       |    1 [32m+[m
+ trojanscout-ai/tsconfig.json           |    1 [32m+[m
+ trojanscout-ai/tsconfig.node.json      |    1 [32m+[m
+ trojanscout-ai/vite.config.ts          |    3 [32m+[m
+ 18 files changed, 3696 insertions(+)
