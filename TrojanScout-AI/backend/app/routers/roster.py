@@ -1,4 +1,4 @@
-
+from app.services.scouting_report import generate_scouting_report
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
@@ -206,3 +206,87 @@ def simulate_roster(
         "roster_analysis": roster_analysis,
         "optimization": optimization,
     }
+
+@router.post("/report")
+def create_scouting_report(
+    request: RosterSimulationRequest,
+    db: Session = Depends(get_db),
+):
+    groups = {
+        "graduating": request.graduating_player_ids,
+        "current": request.returning_player_ids,
+        "recruit": request.recruit_ids,
+    }
+
+    all_ids = [
+        player_id
+        for ids in groups.values()
+        for player_id in ids
+    ]
+
+    if len(all_ids) != len(set(all_ids)):
+        raise HTTPException(
+            status_code=422,
+            detail="Player IDs must be unique",
+        )
+
+    if request.max_recruits > len(request.recruit_ids):
+        raise HTTPException(
+            status_code=422,
+            detail="Not enough recruits",
+        )
+
+    if request.priorities is not None:
+        if (
+            not request.priorities
+            or any(
+                key not in DEFAULT_PRIORITIES
+                or not isinstance(value, (int, float))
+                or value < 0
+                or value > 1
+                for key, value in request.priorities.items()
+            )
+            or sum(request.priorities.values()) <= 0
+        ):
+            raise HTTPException(
+                status_code=422,
+                detail="Invalid priorities",
+            )
+
+    players = db.scalars(
+        select(Player).where(Player.id.in_(all_ids))
+    ).all()
+
+    by_id = {player.id: player for player in players}
+    selected = {}
+
+    for category, ids in groups.items():
+        selected[category] = []
+
+        for player_id in ids:
+            player = by_id.get(player_id)
+
+            if player is None:
+                raise HTTPException(
+                    status_code=404,
+                    detail=f"Player {player_id} not found",
+                )
+
+            if player.category != category:
+                raise HTTPException(
+                    status_code=400,
+                    detail=(
+                        f"Player {player_id} must have "
+                        f"category '{category}'"
+                    ),
+                )
+
+            selected[category].append(player)
+
+    return generate_scouting_report(
+        graduating=selected["graduating"],
+        returning=selected["current"],
+        recruits=selected["recruit"],
+        max_recruits=request.max_recruits,
+        priorities=request.priorities,
+    )

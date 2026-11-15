@@ -6,6 +6,7 @@ from app.database import Base, engine
 from app.models.player import Player
 from app.routers.players import router as players_router
 from app.routers.roster import router as roster_router
+from app.routers.data_quality import router as data_quality_router
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
@@ -27,6 +28,7 @@ app.include_router(roster_router)
 app.include_router(players_router)
 app.include_router(videos_router)
 app.include_router(comparisons_router)
+app.include_router(data_quality_router)
 @app.get("/")
 def root():
     return {
